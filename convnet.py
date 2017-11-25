@@ -43,7 +43,7 @@ def create_binary_convolution_model():
     # After the last layer, we need to apply a learnable scale
     SP = C.parameter(shape=z.shape, init=0.001)
     z = C.element_times(z, SP)
-    z = C.softmax(z)
+
     # loss and metric
     ce = C.cross_entropy_with_softmax(z, label_var)
     pe = C.classification_error(z, label_var)
@@ -73,11 +73,11 @@ if __name__=='__main__':
     model = create_binary_convolution_model()
     z, criterion = get_z_and_criterion(model)
     reader_train = create_reader(os.path.join(data_path, 'train_map.txt'), os.path.join(data_path, 'CIFAR-10_mean.xml'), True)
-    train_model(reader_train, z, criterion, max_epochs=200)
+    train_model(reader_train, z, criterion, max_epochs=100)
 
-
+    modelz=C.softmax(z)
     model_path = data_path + "/model.cntk"
-    model.save(model_path)
+    modelz.save(model_path)
 
     
     reader_test = create_reader(os.path.join(data_path, 'test_map.txt'), os.path.join(data_path, 'CIFAR-10_mean.xml'), False)
