@@ -12,7 +12,7 @@ import cntk as C
 
 
 
-# Create the binary convolution network for training.
+
 def create_binary_convolution_model():
 
     # Input variables denoting the features and label data
@@ -40,34 +40,29 @@ def create_binary_convolution_model():
     z = C.reshape(z, (num_classes,))
 
 
-    # After the last layer, we need to apply a learnable scale
+
     SP = C.parameter(shape=z.shape, init=0.001)
     z = C.element_times(z, SP)
 
-    # loss and metric
     ce = C.cross_entropy_with_softmax(z, label_var)
     pe = C.classification_error(z, label_var)
 
     return C.combine([z, ce, pe])
 
-# Clones a binary convolution network, sharing the original parameters  but substitutes the
-# python 'binary_convolve' Function instances used during training, faster C++ NativeBinaryConvolveFunction
-# instances that uses optimized binary convolution implementations generated using the Halide framework
+
 
 
 def get_z_and_criterion(combined_model):
     return (C.combine([combined_model.outputs[0].owner]), C.combine([combined_model.outputs[1].owner, combined_model.outputs[2].owner]))
 
-# Import training and evaluation routines from ConvNet_CIFAR10_DataAug
+
 abs_path = os.path.dirname(os.path.abspath(__file__))
 custom_convolution_ops_dir = os.path.join(abs_path, "..", "..", "Image", "Classification", "ConvNet", "Python")
 sys.path.append(custom_convolution_ops_dir)
 
 from ConvNet_CIFAR10_DataAug import *
 
-############################# 
-# main function boilerplate #
-#############################
+
 
 if __name__=='__main__':
     model = create_binary_convolution_model()
